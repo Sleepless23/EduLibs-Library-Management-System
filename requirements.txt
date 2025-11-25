@@ -1,0 +1,8 @@
+# core
+pytest
+python-dateutil
+
+
+# optional (Google Books / PDF export)
+requests
+reportlab
