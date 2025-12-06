@@ -1,110 +1,108 @@
-# EduLibs-Library-Management-System-3A
+# Library Management & Book Tracking System
 
-Library Management & Book Tracking System — Client Problem Statement
-Client Information
+A web-based application for managing library operations across EduLib Schools Consortium.
 
-Client Name: Henry Moreno
-Position: Operations Manager
-Organization: EduLib Schools Consortium
-Type: Private School Network (14 schools)
+## Features
 
-📌 Background
+- **Book Management**: Add, edit, delete books with ISBN, title, author, genre, and quantity tracking.
+- **Student Management**: Register students with personal and school information.
+- **Borrowing & Returning**: Track book loans with automatic due dates and overdue detection.
+- **Reporting**: Generate reports on most borrowed books, overdue items, and books per school.
+- **User Interface**: Clean, Bootstrap-based web interface suitable for non-technical users.
 
-EduLib Schools Consortium currently manages library records using Excel sheets and handwritten logbooks. This has resulted in missing books, inconsistent records, and difficulties tracking which school holds which materials.
+## Technology Stack
 
-The organization wants to transition to a centralized digital library system that is easy for librarians—many of whom have limited ICT skills—to use effectively.
+- **Backend**: Python Flask
+- **Database**: SQLite (easily switchable to PostgreSQL)
+- **Frontend**: HTML, CSS (Bootstrap), Jinja2 templates
+- **Forms**: Flask-WTF
+- **Migrations**: Flask-Migrate
 
-🔥 Current Problems
+## Installation
 
-All library records (books, borrowers, returns) are stored in paper files or Excel, causing frequent data loss and errors.
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd library_management_system
+   ```
 
-Books are often lost or unreturned, with no automated overdue tracking.
+2. Create virtual environment:
+   ```bash
+   python -m venv venv
+   ```
 
-New book entries are typed manually, resulting in wrong titles, authors, and genres.
+3. Activate virtual environment:
+   - Windows: `venv\Scripts\activate`
+   - Linux/Mac: `source venv/bin/activate`
 
-Administrators cannot easily generate reports such as:
+4. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-Most borrowed books
+5. Initialize database:
+   ```bash
+   set FLASK_APP=run.py
+   flask db init
+   flask db migrate -m "initial"
+   flask db upgrade
+   ```
 
-Books per school
+6. Run the application:
+   ```bash
+   python run.py
+   ```
 
-Overdue books
+   Access at http://localhost:5000
 
-No standardized system across the 14 school libraries.
+## Usage
 
-🎯 Project Goal
+- Navigate to the home page and use the menu to manage books, students, borrowings, and view reports.
+- Add books by providing ISBN, title, author, etc.
+- Register students with their details.
+- Borrow books by selecting student and available book.
+- Return books from the borrowings list.
+- View reports for insights into library usage.
 
-To build a simple, reliable Library Management & Book Tracking System that improves accountability, reduces book loss, and standardizes library operations across all EduLib schools.
+## Testing
 
-🖥️ System Requirements
-✔ 1. Book Management
+Run unit tests:
+```bash
+python -m unittest tests/test_app.py
+```
 
-Add new books
+## SDLC Documentation (Waterfall Model)
 
-Edit book details
+### 1. Requirements Analysis
+- Functional requirements: Book CRUD, Student CRUD, Borrowing/Returning, Reporting
+- Non-functional: Easy UI, SQLite database, Python/Flask backend
+- User stories from client problem statement
 
-Delete books
+### 2. System Design
+- Database schema: Books, Students, Borrowings tables
+- Architecture: Flask MVC with templates
+- UI wireframes: Simple forms and tables
 
-Store ISBN, title, author, genre, and quantity
+### 3. Implementation
+- Code structure: app/ with models, routes, forms, templates
+- Features implemented as per requirements
 
-(Optional) Automatically fill book details using the Google Books API when ISBN is entered
+### 4. Testing
+- Unit tests for models and key functions
+- Manual testing of web interface
 
-✔ 2. Student Management
+### 5. Deployment
+- Instructions for setup and running
+- Production considerations: Switch to PostgreSQL, add authentication if needed
 
-Register students with:
+## Future Enhancements
 
-Full name
+- User authentication for librarians
+- Google Books API integration for auto-filling book details
+- PDF/CSV export for reports
+- Email notifications for overdue books
+- Barcode scanning for books
 
-Class
+## License
 
-School
-
-Contact information
-
-✔ 3. Borrowing & Returning
-
-Record when a student borrows a book
-
-Auto-generate due dates
-
-Track overdue books
-
-Mark books as returned
-
-Prevent borrowing if no copies are available
-
-✔ 4. Reporting
-
-System should generate useful reports such as:
-
-Most Borrowed Books Report
-
-Overdue Books List
-
-Total Books per School
-
-Borrowing History per Student
-
-Reports should be exportable as PDF or CSV.
-
-✔ 5. User Experience Requirements
-
-System must be clean and easy for non-technical librarians
-
-Clear menus and instructions
-
-Must work even with slow internet or offline (depending on solution type)
-
-🛠️ Technical Requirements
-
-Python-based backend
-
-Optional Flask web interface or CLI interface
-
-SQLite or PostgreSQL database
-
-Git (feature-branch workflow)
-
-Proper SDLC documentation following the Waterfall Model
-
-Unit tests for key features (book creation, borrowing, etc.)
+This project is for EduLib Schools Consortium.
