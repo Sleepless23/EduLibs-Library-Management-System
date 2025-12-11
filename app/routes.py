@@ -249,10 +249,14 @@ def borrowing_history():
 @admin_required
 def students():
     students = Student.query.all()
+    total_current = 0
+    total_all = 0
     for student in students:
         student.current_borrowed = len([b for b in student.borrowings if b.status == 'borrowed'])
         student.total_borrowed = len(student.borrowings)
-    return render_template('students.html', students=students)
+        total_current += student.current_borrowed
+        total_all += student.total_borrowed
+    return render_template('students.html', students=students, total_current=total_current, total_all=total_all)
 
 @bp.route('/students/add', methods=['GET', 'POST'])
 @admin_required

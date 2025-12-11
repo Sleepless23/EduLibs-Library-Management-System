@@ -306,13 +306,7 @@
                     <div class="icon-wrapper">
                         <i class="fas fa-book-open"></i>
                     </div>
-                    <h3>
-                        {% set total_current = 0 %}
-                        {% for student in students %}
-                            {% set total_current = total_current + student.current_borrowed %}
-                        {% endfor %}
-                        {{ total_current }}
-                    </h3>
+                    <h3>{{ total_current }}</h3>
                     <p>Books Currently Borrowed</p>
                 </div>
             </div>
@@ -321,13 +315,7 @@
                     <div class="icon-wrapper">
                         <i class="fas fa-chart-line"></i>
                     </div>
-                    <h3>
-                        {% set total_all = 0 %}
-                        {% for student in students %}
-                            {% set total_all = total_all + student.total_borrowed %}
-                        {% endfor %}
-                        {{ total_all }}
-                    </h3>
+                    <h3>{{ total_all }}</h3>
                     <p>Total Borrowings</p>
                 </div>
             </div>
