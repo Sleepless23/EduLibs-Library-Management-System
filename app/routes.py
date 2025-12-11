@@ -387,8 +387,9 @@ def return_book(id):
         db.session.commit()
         flash('Book returned successfully!')
     except Exception as e:
+        print(f"ERROR returning book: {str(e)}")  # Print to console for debugging
         db.session.rollback()
-        flash('Failed to mark book as returned: ' + str(e))
+        flash(f'Failed to mark book as returned: {str(e)}')
     return redirect(url_for('main.borrowings'))
 
 # export route

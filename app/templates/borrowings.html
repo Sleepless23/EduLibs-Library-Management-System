@@ -487,6 +487,7 @@
                             <td>
                                 {% if borrowing.status == 'borrowed' %}
                                     <form method="POST" action="{{ url_for('main.return_book', id=borrowing.id) }}" style="display:inline;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                         <button type="submit" class="btn-return-book" onclick="return confirm('Mark this book as returned?')">
                                             <i class="fas fa-undo me-1"></i>Return
                                         </button>
