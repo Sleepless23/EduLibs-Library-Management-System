@@ -281,6 +281,7 @@
                                     <small>{{ book.genre }}</small>
                                 </div>
                                 <form method="POST" action="{{ url_for('main.borrow_book', book_id=book.id) }}" class="ms-3">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                     <button type="submit" class="btn btn-borrow">
                                         <i class="fas fa-plus me-1"></i>Borrow
                                     </button>
