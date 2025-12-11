@@ -4,6 +4,12 @@ from app.models import Book, Student, Borrowing
 def populate_db():
     app = create_app()
     with app.app_context():
+        Borrowing.query.delete()
+        old_students = Student.query.filter(Student.email.in_(['alice@email.com', 'bob@email.com', 'carol@email.com'])).all()
+        for student in old_students:
+            db.session.delete(student)
+        db.session.commit()
+        
         books = [
             Book(isbn='9780061120084', title='To Kill a Mockingbird', author='Harper Lee', genre='Fiction', quantity=4),
             Book(isbn='9780451524935', title='1984', author='George Orwell', genre='Dystopian', quantity=3),
@@ -45,10 +51,11 @@ def populate_db():
             if not existing:
                 book.available_quantity = book.quantity
                 db.session.add(book)
+            else:
+                # Reset available quantity for existing books
+                existing.available_quantity = existing.quantity
+                db.session.add(existing)
         students = [
-            Student(email='alice@email.com', full_name='Alice Johnson', class_name='10A', school='EduLib Primary', contact='alice@email.com'),
-            Student(email='bob@email.com', full_name='Bob Smith', class_name='11B', school='EduLib Secondary', contact='bob@email.com'),
-            Student(email='carol@email.com', full_name='Carol Davis', class_name='9C', school='EduLib Primary', contact='carol@email.com'),
             Student(email='admin@edulib.com', full_name='Admin User', class_name='N/A', school='EduLib', contact='admin@edulib.com', is_admin=True),
         ]
 
@@ -69,29 +76,7 @@ def populate_db():
         from datetime import datetime, timedelta
         import random
 
-        alice = Student.query.filter_by(email='alice@email.com').first()
-        if alice:
-            books_for_alice = Book.query.limit(3).all()
-            for i, book in enumerate(books_for_alice):
-                borrowing = Borrowing(alice.id, book.id)
-
-                days_ago = random.randint(10, 30)
-                borrowing.borrow_date = datetime.utcnow() - timedelta(days=days_ago)
-                borrowing.due_date = borrowing.borrow_date + timedelta(days=14)
-                borrowing.return_date = borrowing.borrow_date + timedelta(days=random.randint(5, 14))
-                borrowing.status = 'returned'
-                db.session.add(borrowing)
-                book.available_quantity += 1  
-
-        bob = Student.query.filter_by(email='bob@email.com').first()
-        if bob:
-            available_books = Book.query.filter(Book.available_quantity > 0).limit(2).all()
-            for book in available_books:
-                borrowing = Borrowing(bob.id, book.id)
-                borrowing.status = 'borrowed'
-                db.session.add(borrowing)
-                book.available_quantity -= 1
-
+        # Commit the student/borrowing data
         db.session.commit()
 
         active_count = Borrowing.query.filter(Borrowing.status == 'borrowed').count()
