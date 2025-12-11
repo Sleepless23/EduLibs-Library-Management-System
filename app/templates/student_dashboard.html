@@ -1,0 +1,361 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard - EduLib Library{% endblock %}
+
+{% block content %}
+<style>
+.welcome-header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    color: white;
+    padding: 40px 0;
+    margin: -20px -15px 40px -15px;
+    border-radius: 0 0 30px 30px;
+    position: relative;
+    overflow: hidden;
+}
+.welcome-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="header-pattern" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="0.8" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23header-pattern)"/></svg>');
+    pointer-events: none;
+}
+.welcome-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+.welcome-header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 0;
+}
+.student-nav {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 40px;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+.student-nav .nav-link {
+    color: #0f172a !important;
+    font-weight: 600;
+    padding: 12px 20px;
+    margin: 0 5px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+.student-nav .nav-link:hover {
+    background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+    color: #0f172a !important;
+    transform: translateY(-2px);
+}
+.student-nav .nav-link.active {
+    background: linear-gradient(135deg, #0f172a, #334155);
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(15, 23, 42, 0.3);
+}
+.stats-card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    margin-bottom: 30px;
+}
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+.stats-card .icon-wrapper {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 2rem;
+}
+.stats-card:nth-child(1) .icon-wrapper {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+}
+.stats-card:nth-child(2) .icon-wrapper {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+}
+.stats-card:nth-child(3) .icon-wrapper {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+.stats-card h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 10px;
+}
+.stats-card p {
+    color: #64748b;
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+.btn-dashboard {
+    background: linear-gradient(135deg, #0f172a, #334155);
+    border: none;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 25px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+.btn-dashboard:hover {
+    background: linear-gradient(135deg, #334155, #0f172a);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(15, 23, 42, 0.3);
+}
+.action-section {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+}
+.action-section h4 {
+    color: #0f172a;
+    font-weight: 700;
+    margin-bottom: 25px;
+    font-size: 1.5rem;
+}
+.book-item {
+    background: #f8fafc;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 15px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+.book-item:hover {
+    background: #f1f5f9;
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.book-item h6 {
+    color: #0f172a;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+.book-item p {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+.book-item small {
+    color: #94a3b8;
+    font-weight: 500;
+}
+.btn-borrow {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+.btn-borrow:hover {
+    background: linear-gradient(135deg, #059669, #10b981);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+.btn-outline-dashboard {
+    border: 2px solid #0f172a;
+    color: #0f172a;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+.btn-outline-dashboard:hover {
+    background: #0f172a;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+}
+</style>
+<div class="welcome-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1>Welcome back, {{ current_user.full_name }}!</h1>
+                <p>Class: {{ current_user.class_name }} | School: {{ current_user.school }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="student-nav">
+        <div class="d-flex justify-content-center flex-wrap">
+            <a class="nav-link {{ 'active' if request.endpoint == 'main.dashboard' else '' }}" href="{{ url_for('main.dashboard') }}">
+                <i class="fas fa-tachometer-alt me-2"></i>Overview
+            </a>
+            <a class="nav-link" href="{{ url_for('main.available_books') }}">
+                <i class="fas fa-book me-2"></i>Available Books
+            </a>
+            <a class="nav-link" href="{{ url_for('main.my_books') }}">
+                <i class="fas fa-bookmark me-2"></i>My Books
+            </a>
+            <a class="nav-link" href="{{ url_for('main.borrowing_history') }}">
+                <i class="fas fa-history me-2"></i>History
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4 col-md-6">
+            <div class="stats-card">
+                <div class="icon-wrapper">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <h3>{{ available_books|length }}</h3>
+                <p>Books Available</p>
+                <a href="{{ url_for('main.available_books') }}" class="btn-dashboard">
+                    <i class="fas fa-search me-2"></i>Browse Books
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="stats-card">
+                <div class="icon-wrapper">
+                    <i class="fas fa-bookmark"></i>
+                </div>
+                <h3>{{ borrowed_books|length }}</h3>
+                <p>Currently Borrowed</p>
+                <a href="{{ url_for('main.my_books') }}" class="btn-dashboard">
+                    <i class="fas fa-eye me-2"></i>View My Books
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-12">
+            <div class="stats-card">
+                <div class="icon-wrapper">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>{{ history|length }}</h3>
+                <p>Total Borrowings</p>
+                <a href="{{ url_for('main.borrowing_history') }}" class="btn-dashboard">
+                    <i class="fas fa-history me-2"></i>View History
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="action-section">
+                <h4><i class="fas fa-bolt text-warning me-2"></i>Quick Borrow</h4>
+                {% if available_books %}
+                    {% for book in available_books[:3] %}
+                        <div class="book-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="flex-grow-1">
+                                    <h6>{{ book.title }}</h6>
+                                    <p>by {{ book.author }}</p>
+                                    <small>{{ book.genre }}</small>
+                                </div>
+                                <form method="POST" action="{{ url_for('main.borrow_book', book_id=book.id) }}" class="ms-3">
+                                    <button type="submit" class="btn btn-borrow">
+                                        <i class="fas fa-plus me-1"></i>Borrow
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('main.available_books') }}" class="btn-outline-dashboard">
+                            <i class="fas fa-list me-2"></i>View All Books
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-book-open text-muted" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                        <p class="text-muted">No books available for quick borrow at the moment.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="action-section">
+                <h4><i class="fas fa-search text-primary me-2"></i>Discover New Books</h4>
+                <p class="text-muted mb-3">Search millions of books from the Open Library database</p>
+
+                <form method="GET" action="{{ url_for('main.search_books') }}" class="mb-3">
+                    <div class="input-group">
+                        <input type="text" name="q" class="form-control" placeholder="Search for any book..." required style="border-radius: 25px 0 0 25px; border-right: none;">
+                        <button class="btn btn-primary" type="submit" style="border-radius: 0 25px 25px 0; border-left: none;">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+                <div class="mb-3">
+                    <small class="text-muted d-block mb-2">Popular searches:</small>
+                    <div class="d-flex flex-wrap gap-1">
+                        <a href="{{ url_for('main.search_books', q='Harry Potter') }}" class="badge bg-light text-dark text-decoration-none">Harry Potter</a>
+                        <a href="{{ url_for('main.search_books', q='Pride and Prejudice') }}" class="badge bg-light text-dark text-decoration-none">Pride & Prejudice</a>
+                        <a href="{{ url_for('main.search_books', q='The Great Gatsby') }}" class="badge bg-light text-dark text-decoration-none">Great Gatsby</a>
+                        <a href="{{ url_for('main.search_books', q='To Kill a Mockingbird') }}" class="badge bg-light text-dark text-decoration-none">Mockingbird</a>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <a href="{{ url_for('main.search_books') }}" class="btn-outline-dashboard">
+                        <i class="fas fa-external-link-alt me-2"></i>Advanced Search
+                    </a>
+                </div>
+                {% if recommendations %}
+                <hr class="my-4">
+                <h6 class="text-muted mb-3"><i class="fas fa-lightbulb me-1"></i>Recommended for You</h6>
+                {% for book in recommendations[:2] %}
+                    <div class="book-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="flex-grow-1">
+                                <h6>{{ book.title }}</h6>
+                                <p>by {{ book.author }}</p>
+                                <small>{{ book.genre }}</small>
+                            </div>
+                            {% if book.available_quantity > 0 %}
+                                <form method="POST" action="{{ url_for('main.borrow_book', book_id=book.id) }}" class="ms-3">
+                                    <button type="submit" class="btn btn-borrow">
+                                        <i class="fas fa-plus me-1"></i>Borrow
+                                    </button>
+                                </form>
+                            {% else %}
+                                <span class="badge bg-secondary ms-3">Unavailable</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

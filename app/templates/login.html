@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Login - EduLib Library{% endblock %}
+
+{% block content %}
+<style>
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+.auth-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    overflow: hidden;
+    border: none;
+}
+.auth-left {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    color: white;
+    padding: 60px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+}
+.auth-left::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="auth-pattern" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="0.8" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23auth-pattern)"/></svg>');
+    pointer-events: none;
+}
+.auth-left h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+.auth-left p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    line-height: 1.6;
+}
+.auth-right {
+    padding: 60px 50px;
+}
+.auth-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 10px;
+}
+.auth-subtitle {
+    color: #64748b;
+    margin-bottom: 40px;
+    font-size: 1rem;
+}
+.form-floating {
+    margin-bottom: 20px;
+}
+.form-floating > label {
+    color: #64748b;
+    font-weight: 500;
+}
+.form-control {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px 20px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+.form-control:focus {
+    border-color: #0f172a;
+    box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1);
+}
+.btn-auth {
+    background: linear-gradient(135deg, #0f172a, #334155);
+    border: none;
+    color: white;
+    padding: 16px 40px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+.btn-auth:hover {
+    background: linear-gradient(135deg, #334155, #0f172a);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(15, 23, 42, 0.3);
+}
+.auth-links {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 1px solid #e2e8f0;
+}
+.auth-links a {
+    color: #0f172a;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+.auth-links a:hover {
+    color: #334155;
+}
+.text-danger {
+    font-size: 0.875rem;
+    margin-top: 5px;
+}
+</style>
+
+<div class="auth-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="auth-card">
+                    <div class="row g-0">
+                        <div class="col-lg-6">
+                            <div class="auth-left">
+                                <div>
+                                    <h2>Welcome Back</h2>
+                                    <p>Access your EduLib account to browse books, manage your borrowings, and explore our extensive library collection.</p>
+                                </div>
+                                <div style="margin-top: 40px;">
+                                    <div style="display: inline-block; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 12px; backdrop-filter: blur(10px);">
+                                        <i class="fas fa-book-open" style="font-size: 2rem; color: #60a5fa;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="auth-right">
+                                <h1 class="auth-title">Sign In</h1>
+                                <p class="auth-subtitle">Enter your credentials to access your account</p>
+
+                                <form method="POST">
+                                    {{ form.hidden_tag() }}
+                                    <div class="form-floating">
+                                        {{ form.email(class="form-control", placeholder="Email Address") }}
+                                        {{ form.email.label() }}
+                                        {% if form.email.errors %}
+                                            {% for error in form.email.errors %}
+                                                <div class="text-danger">{{ error }}</div>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                    <div class="form-floating">
+                                        {{ form.password(class="form-control", placeholder="Password") }}
+                                        {{ form.password.label() }}
+                                        {% if form.password.errors %}
+                                            {% for error in form.password.errors %}
+                                                <div class="text-danger">{{ error }}</div>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                    <button type="submit" class="btn btn-auth">Sign In</button>
+                                </form>
+
+                                <div class="auth-links">
+                                    <p>Don't have an account? <a href="{{ url_for('main.signup') }}">Create one here</a></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

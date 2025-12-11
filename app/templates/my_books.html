@@ -1,0 +1,331 @@
+{% extends "base.html" %}
+
+{% block title %}My Books - EduLib Library{% endblock %}
+
+{% block content %}
+<style>
+.page-header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    color: white;
+    padding: 40px 0;
+    margin: -20px -15px 40px -15px;
+    border-radius: 0 0 30px 30px;
+    position: relative;
+    overflow: hidden;
+}
+.page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="header-pattern" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="0.8" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23header-pattern)"/></svg>');
+    pointer-events: none;
+}
+.page-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+.page-header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 0;
+}
+.student-nav {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 40px;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+.student-nav .nav-link {
+    color: #0f172a !important;
+    font-weight: 600;
+    padding: 12px 20px;
+    margin: 0 5px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+.student-nav .nav-link:hover {
+    background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+    color: #0f172a !important;
+    transform: translateY(-2px);
+}
+.student-nav .nav-link.active {
+    background: linear-gradient(135deg, #0f172a, #334155);
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(15, 23, 42, 0.3);
+}
+.borrowed-book-card {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+.borrowed-book-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+.borrowed-book-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+.book-title {
+    color: #0f172a;
+    font-weight: 700;
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+.book-author {
+    color: #64748b;
+    font-weight: 500;
+    margin-bottom: 15px;
+    font-size: 1rem;
+}
+.book-details {
+    background: #f8fafc;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+.detail-item:last-child {
+    margin-bottom: 0;
+}
+.detail-label {
+    color: #64748b;
+    font-weight: 600;
+}
+.detail-value {
+    color: #0f172a;
+    font-weight: 500;
+}
+.status-on-time {
+    background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+    color: #166534;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-block;
+}
+.status-overdue {
+    background: linear-gradient(135deg, #fef2f2, #fee2e2);
+    color: #dc2626;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-block;
+    animation: pulse 2s infinite;
+}
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+.btn-return {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border: none;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 12px;
+    font-weight: 600;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+.btn-return:hover {
+    background: linear-gradient(135deg, #059669, #10b981);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+}
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+.empty-state i {
+    font-size: 4rem;
+    color: #cbd5e1;
+    margin-bottom: 20px;
+}
+.empty-state h4 {
+    color: #0f172a;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+.empty-state p {
+    color: #64748b;
+    margin-bottom: 25px;
+}
+.btn-browse-books {
+    background: linear-gradient(135deg, #0f172a, #334155);
+    border: none;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+.btn-browse-books:hover {
+    background: linear-gradient(135deg, #334155, #0f172a);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(15, 23, 42, 0.3);
+}
+.info-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 20px;
+    padding: 30px;
+    margin-top: 40px;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+.info-section h5 {
+    color: #0f172a;
+    font-weight: 700;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+}
+.info-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.info-list li {
+    color: #64748b;
+    margin-bottom: 10px;
+    padding-left: 25px;
+    position: relative;
+    font-size: 0.95rem;
+}
+.info-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #10b981;
+    font-weight: bold;
+}
+</style>
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1><i class="fas fa-bookmark me-3"></i>My Borrowed Books</h1>
+                <p>Manage your currently borrowed books and return them when ready</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="student-nav">
+        <div class="d-flex justify-content-center flex-wrap">
+            <a class="nav-link" href="{{ url_for('main.dashboard') }}">
+                <i class="fas fa-tachometer-alt me-2"></i>Overview
+            </a>
+            <a class="nav-link" href="{{ url_for('main.available_books') }}">
+                <i class="fas fa-book me-2"></i>Available Books
+            </a>
+            <a class="nav-link active" href="{{ url_for('main.my_books') }}">
+                <i class="fas fa-bookmark me-2"></i>My Books
+            </a>
+            <a class="nav-link" href="{{ url_for('main.borrowing_history') }}">
+                <i class="fas fa-history me-2"></i>History
+            </a>
+        </div>
+    </div>
+
+    {% if borrowed_books %}
+    <div class="row">
+        {% for book in borrowed_books %}
+        <div class="col-lg-6 col-xl-4 mb-4">
+            <div class="borrowed-book-card">
+                <h5 class="book-title">{{ book.title }}</h5>
+                <p class="book-author">by {{ book.author }}</p>
+
+                <div class="book-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Genre:</span>
+                        <span class="detail-value">{{ book.genre }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Borrowed:</span>
+                        <span class="detail-value">{{ borrowings[book.id].borrow_date.strftime('%b %d, %Y') }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Due Date:</span>
+                        <span class="detail-value">{{ borrowings[book.id].due_date.strftime('%b %d, %Y') }}</span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    {% if borrowings[book.id].due_date < borrowings[book.id].borrow_date.replace(hour=23, minute=59, second=59) %}
+                        <span class="status-overdue">
+                            <i class="fas fa-exclamation-triangle me-1"></i>Overdue - Return ASAP
+                        </span>
+                    {% else %}
+                        <span class="status-on-time">
+                            <i class="fas fa-check-circle me-1"></i>On Time
+                        </span>
+                    {% endif %}
+                </div>
+
+                <form method="POST" action="{{ url_for('main.return_borrowing', borrowing_id=borrowings[book.id].id) }}">
+                    <button type="submit" class="btn btn-return">
+                        <i class="fas fa-undo me-2"></i>Return Book
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-bookmark"></i>
+        <h4>No Books Currently Borrowed</h4>
+        <p>You haven't borrowed any books yet. Browse our collection to find something interesting!</p>
+        <a href="{{ url_for('main.available_books') }}" class="btn-browse-books">
+            <i class="fas fa-search me-2"></i>Browse Available Books
+        </a>
+    </div>
+    {% endif %}
+    <div class="info-section">
+        <h5><i class="fas fa-info-circle me-2"></i>Borrowing Guidelines</h5>
+        <ul class="info-list">
+            <li>Books are due 14 days from the borrowing date</li>
+            <li>Late returns may result in borrowing restrictions</li>
+            <li>You can borrow up to 3 books at a time</li>
+            <li>Contact library staff for extensions or questions</li>
+            <li>Keep books in good condition and return on time</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

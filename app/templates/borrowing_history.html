@@ -1,0 +1,404 @@
+{% extends "base.html" %}
+
+{% block title %}Borrowing History - EduLib Library{% endblock %}
+
+{% block content %}
+<style>
+.page-header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    color: white;
+    padding: 40px 0;
+    margin: -20px -15px 40px -15px;
+    border-radius: 0 0 30px 30px;
+    position: relative;
+    overflow: hidden;
+}
+.page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="header-pattern" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="0.8" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23header-pattern)"/></svg>');
+    pointer-events: none;
+}
+.page-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+.page-header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 0;
+}
+.student-nav {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 40px;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+.student-nav .nav-link {
+    color: #0f172a !important;
+    font-weight: 600;
+    padding: 12px 20px;
+    margin: 0 5px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+.student-nav .nav-link:hover {
+    background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+    color: #0f172a !important;
+    transform: translateY(-2px);
+}
+.student-nav .nav-link.active {
+    background: linear-gradient(135deg, #0f172a, #334155);
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(15, 23, 42, 0.3);
+}
+.history-section {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+    margin-bottom: 40px;
+}
+.history-section h4 {
+    color: #0f172a;
+    font-weight: 700;
+    margin-bottom: 25px;
+    font-size: 1.5rem;
+}
+.history-table {
+    background: #f8fafc;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+.table {
+    margin-bottom: 0;
+}
+.table thead th {
+    background: linear-gradient(135deg, #0f172a, #334155);
+    color: white;
+    border: none;
+    padding: 15px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.table tbody td {
+    padding: 15px;
+    border-bottom: 1px solid #e2e8f0;
+    color: #64748b;
+    font-weight: 500;
+}
+.table tbody tr:hover {
+    background: #f1f5f9;
+}
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+.book-title-cell {
+    color: #0f172a;
+    font-weight: 600;
+    max-width: 200px;
+}
+.pagination {
+    margin-top: 30px;
+}
+.pagination .page-link {
+    color: #0f172a;
+    border-color: #e2e8f0;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin: 0 2px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+.pagination .page-link:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+    border-color: #cbd5e1;
+}
+.pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, #0f172a, #334155);
+    border-color: #0f172a;
+    color: white;
+}
+.stats-section {
+    margin-top: 40px;
+}
+.stats-card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    margin-bottom: 30px;
+}
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+.stats-card .icon-wrapper {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 2rem;
+}
+.stats-card:nth-child(1) .icon-wrapper {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+}
+.stats-card:nth-child(2) .icon-wrapper {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+}
+.stats-card:nth-child(3) .icon-wrapper {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+.stats-card h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 10px;
+}
+.stats-card p {
+    color: #64748b;
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 0;
+}
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+.empty-state i {
+    font-size: 4rem;
+    color: #cbd5e1;
+    margin-bottom: 20px;
+}
+.empty-state h4 {
+    color: #0f172a;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+.empty-state p {
+    color: #64748b;
+    margin-bottom: 25px;
+}
+.btn-browse-books {
+    background: linear-gradient(135deg, #0f172a, #334155);
+    border: none;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+.btn-browse-books:hover {
+    background: linear-gradient(135deg, #334155, #0f172a);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(15, 23, 42, 0.3);
+}
+</style>
+
+<div class="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1><i class="fas fa-history me-3"></i>My Borrowing History</h1>
+                <p>View all the books you've borrowed and returned in the past</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="student-nav">
+        <div class="d-flex justify-content-center flex-wrap">
+            <a class="nav-link" href="{{ url_for('main.dashboard') }}">
+                <i class="fas fa-tachometer-alt me-2"></i>Overview
+            </a>
+            <a class="nav-link" href="{{ url_for('main.available_books') }}">
+                <i class="fas fa-book me-2"></i>Available Books
+            </a>
+            <a class="nav-link" href="{{ url_for('main.my_books') }}">
+                <i class="fas fa-bookmark me-2"></i>My Books
+            </a>
+            <a class="nav-link active" href="{{ url_for('main.borrowing_history') }}">
+                <i class="fas fa-history me-2"></i>History
+            </a>
+        </div>
+    </div>
+
+    <div class="history-section">
+        <h4><i class="fas fa-list me-2"></i>Returned Books History</h4>
+
+        {% if history %}
+        <div class="history-table">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Book Title</th>
+                            <th>Author</th>
+                            <th>Genre</th>
+                            <th>Borrowed Date</th>
+                            <th>Returned Date</th>
+                            <th>Days Borrowed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for borrowing in history %}
+                        <tr>
+                            <td>
+                                <div class="book-title-cell">{{ borrowing.book.title }}</div>
+                            </td>
+                            <td>{{ borrowing.book.author }}</td>
+                            <td>
+                                <span class="badge bg-light text-dark">{{ borrowing.book.genre }}</span>
+                            </td>
+                            <td>{{ borrowing.borrow_date.strftime('%b %d, %Y') }}</td>
+                            <td>{{ borrowing.return_date.strftime('%b %d, %Y') if borrowing.return_date else 'N/A' }}</td>
+                            <td>
+                                {% if borrowing.return_date %}
+                                    <span class="badge bg-success">{{ ((borrowing.return_date - borrowing.borrow_date).days) }} days</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">N/A</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {% if pagination %}
+        <nav aria-label="History pagination">
+            <ul class="pagination justify-content-center">
+                {% if pagination.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('main.borrowing_history', page=pagination.prev_num) }}">
+                        <i class="fas fa-chevron-left me-1"></i>Previous
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link"><i class="fas fa-chevron-left me-1"></i>Previous</span>
+                </li>
+                {% endif %}
+
+                {% for page_num in pagination.iter_pages() %}
+                {% if page_num %}
+                <li class="page-item {{ 'active' if page_num == pagination.page else '' }}">
+                    <a class="page-link" href="{{ url_for('main.borrowing_history', page=page_num) }}">{{ page_num }}</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+                {% endif %}
+                {% endfor %}
+
+                {% if pagination.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('main.borrowing_history', page=pagination.next_num) }}">
+                        Next<i class="fas fa-chevron-right ms-1"></i>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">Next<i class="fas fa-chevron-right ms-1"></i></span>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-history"></i>
+            <h4>No Borrowing History</h4>
+            <p>You haven't returned any books yet. Your borrowing history will appear here once you return books.</p>
+            <a href="{{ url_for('main.available_books') }}" class="btn-browse-books">
+                <i class="fas fa-search me-2"></i>Browse Books to Borrow
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if history %}
+    <div class="stats-section">
+        <div class="row">
+            <div class="col-lg-4 col-md-6">
+                <div class="stats-card">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h3>{{ history|length }}</h3>
+                    <p>Total Books Returned</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="stats-card">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3>
+                        {% set total_days = 0 %}
+                        {% for borrowing in history %}
+                            {% if borrowing.return_date %}
+                                {% set total_days = total_days + ((borrowing.return_date - borrowing.borrow_date).days) %}
+                            {% endif %}
+                        {% endfor %}
+                        {{ (total_days / history|length)|round(1) if history|length > 0 else 0 }}
+                    </h3>
+                    <p>Average Days per Book</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-12">
+                <div class="stats-card">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3>
+                        {% set unique_books = [] %}
+                        {% for borrowing in history %}
+                            {% if borrowing.book.title not in unique_books %}
+                                {% set _ = unique_books.append(borrowing.book.title) %}
+                            {% endif %}
+                        {% endfor %}
+                        {{ unique_books|length }}
+                    </h3>
+                    <p>Unique Books Read</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

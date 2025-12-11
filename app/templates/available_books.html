@@ -1,0 +1,392 @@
+{% extends "base.html" %}
+
+{% block title %}Available Books - EduLib Library{% endblock %}
+
+{% block content %}
+<style>
+.page-header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    color: white;
+    padding: 40px 0;
+    margin: -20px -15px 40px -15px;
+    border-radius: 0 0 30px 30px;
+    position: relative;
+    overflow: hidden;
+}
+.page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="header-pattern" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="0.8" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23header-pattern)"/></svg>');
+    pointer-events: none;
+}
+.page-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+.page-header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 0;
+}
+.student-nav {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 40px;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+.student-nav .nav-link {
+    color: #0f172a !important;
+    font-weight: 600;
+    padding: 12px 20px;
+    margin: 0 5px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+.student-nav .nav-link:hover {
+    background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+    color: #0f172a !important;
+    transform: translateY(-2px);
+}
+.student-nav .nav-link.active {
+    background: linear-gradient(135deg, #0f172a, #334155);
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(15, 23, 42, 0.3);
+}
+.filter-section {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+    margin-bottom: 40px;
+}
+.filter-section h4 {
+    color: #0f172a;
+    font-weight: 700;
+    margin-bottom: 25px;
+    font-size: 1.3rem;
+}
+.form-floating > label {
+    color: #64748b;
+    font-weight: 500;
+}
+.form-select, .form-control {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+.form-select:focus, .form-control:focus {
+    border-color: #0f172a;
+    box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1);
+}
+.btn-filter {
+    background: linear-gradient(135deg, #0f172a, #334155);
+    border: none;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+.btn-filter:hover {
+    background: linear-gradient(135deg, #334155, #0f172a);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(15, 23, 42, 0.3);
+}
+.book-card {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+.book-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+.book-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+.book-title {
+    color: #0f172a;
+    font-weight: 700;
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+.book-author {
+    color: #64748b;
+    font-weight: 500;
+    margin-bottom: 15px;
+    font-size: 1rem;
+}
+.book-info {
+    background: #f8fafc;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+.book-info-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+.book-info-item:last-child {
+    margin-bottom: 0;
+}
+.book-info-label {
+    color: #64748b;
+    font-weight: 600;
+}
+.book-info-value {
+    color: #0f172a;
+    font-weight: 500;
+}
+.btn-borrow-book {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border: none;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 12px;
+    font-weight: 600;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+.btn-borrow-book:hover {
+    background: linear-gradient(135deg, #059669, #10b981);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+}
+.pagination {
+    margin-top: 40px;
+}
+.pagination .page-link {
+    color: #0f172a;
+    border-color: #e2e8f0;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin: 0 2px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+.pagination .page-link:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+    border-color: #cbd5e1;
+}
+.pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, #0f172a, #334155);
+    border-color: #0f172a;
+    color: white;
+}
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+.empty-state i {
+    font-size: 4rem;
+    color: #cbd5e1;
+    margin-bottom: 20px;
+}
+.empty-state h4 {
+    color: #0f172a;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+.empty-state p {
+    color: #64748b;
+    margin-bottom: 25px;
+}
+.btn-dashboard-link {
+    background: linear-gradient(135deg, #0f172a, #334155);
+    border: none;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+.btn-dashboard-link:hover {
+    background: linear-gradient(135deg, #334155, #0f172a);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(15, 23, 42, 0.3);
+}
+</style>
+
+<div class="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1><i class="fas fa-book-open me-3"></i>Available Books</h1>
+                <p>Browse and borrow from our extensive collection of available books</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="student-nav">
+        <div class="d-flex justify-content-center flex-wrap">
+            <a class="nav-link" href="{{ url_for('main.dashboard') }}">
+                <i class="fas fa-tachometer-alt me-2"></i>Overview
+            </a>
+            <a class="nav-link active" href="{{ url_for('main.available_books') }}">
+                <i class="fas fa-book me-2"></i>Available Books
+            </a>
+            <a class="nav-link" href="{{ url_for('main.my_books') }}">
+                <i class="fas fa-bookmark me-2"></i>My Books
+            </a>
+            <a class="nav-link" href="{{ url_for('main.borrowing_history') }}">
+                <i class="fas fa-history me-2"></i>History
+            </a>
+        </div>
+    </div>
+
+    <div class="filter-section">
+        <h4><i class="fas fa-filter me-2"></i>Search & Filter Books</h4>
+        <form method="GET" class="row g-3">
+            <div class="col-lg-3 col-md-6">
+                <div class="form-floating">
+                    <select name="genre" id="genre" class="form-select">
+                        <option value="">All Genres</option>
+                        {% for g in genres %}
+                        <option value="{{ g }}" {% if g == selected_genre %}selected{% endif %}>{{ g }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="genre">Filter by Genre</label>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="form-floating">
+                    <input type="text" name="search" id="search" class="form-control" placeholder="Search by title or author" value="{{ search or '' }}">
+                    <label for="search">Search Books</label>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="form-floating">
+                    <select name="sort" id="sort" class="form-select">
+                        <option value="title" {% if sort_by == 'title' %}selected{% endif %}>Title</option>
+                        <option value="genre" {% if sort_by == 'genre' %}selected{% endif %}>Genre</option>
+                    </select>
+                    <label for="sort">Sort by</label>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-6 d-flex align-items-end">
+                <button type="submit" class="btn btn-filter w-100">
+                    <i class="fas fa-search me-2"></i>Filter
+                </button>
+            </div>
+        </form>
+    </div>
+
+    {% if books %}
+    <div class="row">
+        {% for book in books %}
+        <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+            <div class="book-card">
+                <h5 class="book-title">{{ book.title }}</h5>
+                <p class="book-author">by {{ book.author }}</p>
+
+                <div class="book-info">
+                    <div class="book-info-item">
+                        <span class="book-info-label">Genre:</span>
+                        <span class="book-info-value">{{ book.genre }}</span>
+                    </div>
+                    <div class="book-info-item">
+                        <span class="book-info-label">Available:</span>
+                        <span class="book-info-value">{{ book.available_quantity }} copies</span>
+                    </div>
+                </div>
+
+                <form method="POST" action="{{ url_for('main.borrow_book', book_id=book.id) }}">
+                    <button type="submit" class="btn btn-borrow-book">
+                        <i class="fas fa-plus me-2"></i>Borrow Book
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if pagination %}
+    <nav aria-label="Book pagination">
+        <ul class="pagination justify-content-center">
+            {% if pagination.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('main.available_books', page=pagination.prev_num, genre=selected_genre, search=search, sort=sort_by) }}">
+                    <i class="fas fa-chevron-left me-1"></i>Previous
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link"><i class="fas fa-chevron-left me-1"></i>Previous</span>
+            </li>
+            {% endif %}
+
+            {% for page_num in pagination.iter_pages() %}
+            {% if page_num %}
+            <li class="page-item {{ 'active' if page_num == pagination.page else '' }}">
+                <a class="page-link" href="{{ url_for('main.available_books', page=page_num, genre=selected_genre, search=search, sort=sort_by) }}">{{ page_num }}</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">...</span>
+            </li>
+            {% endif %}
+            {% endfor %}
+
+            {% if pagination.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('main.available_books', page=pagination.next_num, genre=selected_genre, search=search, sort=sort_by) }}">
+                    Next<i class="fas fa-chevron-right ms-1"></i>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">Next<i class="fas fa-chevron-right ms-1"></i></span>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-book-open"></i>
+        <h4>No books available at the moment</h4>
+        <p>Please check back later or contact the library staff for assistance.</p>
+        <a href="{{ url_for('main.dashboard') }}" class="btn-dashboard-link">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

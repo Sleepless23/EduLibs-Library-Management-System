@@ -1,0 +1,366 @@
+{% extends "base.html" %}
+
+{% block title %}Book Borrowing - EduLib Library{% endblock %}
+
+{% block content %}
+<style>
+.page-header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    color: white;
+    padding: 40px 0;
+    margin: -20px -15px 40px -15px;
+    border-radius: 0 0 30px 30px;
+    position: relative;
+    overflow: hidden;
+}
+.page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="borrow-header-pattern" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="0.8" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23borrow-header-pattern)"/></svg>');
+    pointer-events: none;
+}
+.page-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+.page-header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 0;
+}
+.borrowing-section {
+    background: white;
+    border-radius: 25px;
+    padding: 40px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+    margin-bottom: 40px;
+}
+.section-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+.section-header h2 {
+    color: #0f172a;
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+.section-header p {
+    color: #64748b;
+    font-size: 1.1rem;
+}
+.borrowing-form {
+    max-width: 800px;
+    margin: 0 auto;
+}
+.form-section {
+    background: #f8fafc;
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    border: 1px solid #e2e8f0;
+}
+.form-section h4 {
+    color: #0f172a;
+    font-weight: 700;
+    margin-bottom: 25px;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+}
+.form-section h4 i {
+    margin-right: 10px;
+    color: #0f172a;
+}
+.form-floating > label {
+    color: #64748b;
+    font-weight: 500;
+}
+.form-select, .form-control {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+.form-select:focus, .form-control:focus {
+    border-color: #0f172a;
+    box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1);
+}
+.selection-preview {
+    margin-top: 20px;
+    padding: 20px;
+    background: white;
+    border-radius: 15px;
+    border: 1px solid #e2e8f0;
+    display: none;
+}
+.selection-preview.show {
+    display: block;
+}
+.preview-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+.preview-header i {
+    margin-right: 10px;
+    color: #0f172a;
+}
+.preview-header h5 {
+    color: #0f172a;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+.preview-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.detail-label {
+    color: #64748b;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+.detail-value {
+    color: #0f172a;
+    font-weight: 500;
+}
+.btn-submit-borrow {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border: none;
+    color: white;
+    padding: 15px 40px;
+    border-radius: 15px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 30px;
+}
+.btn-submit-borrow:hover {
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+}
+.btn-submit-borrow:disabled {
+    background: #cbd5e1;
+    transform: none;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+.borrowing-summary {
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    border-radius: 20px;
+    padding: 30px;
+    margin-top: 30px;
+    border: 1px solid #bae6fd;
+}
+.summary-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.summary-header i {
+    margin-right: 10px;
+    color: #0f172a;
+}
+.summary-header h4 {
+    color: #0f172a;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+.summary-item {
+    text-align: center;
+}
+.summary-item h5 {
+    color: #0f172a;
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+.summary-item p {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+@media (max-width: 768px) {
+    .borrowing-form {
+        padding: 20px;
+    }
+    .form-section {
+        padding: 20px;
+    }
+    .preview-details {
+        grid-template-columns: 1fr;
+    }
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1><i class="fas fa-handshake me-3"></i>Book Borrowing</h1>
+                <p>Process book borrowing requests for students</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Borrowing Form Section -->
+    <div class="borrowing-section">
+        <div class="section-header">
+            <h2><i class="fas fa-plus-circle me-2"></i>New Borrowing</h2>
+            <p>Select a student and available book to process a borrowing request</p>
+        </div>
+
+        <div class="borrowing-form">
+            <form method="POST" id="borrowForm">
+                {{ form.hidden_tag() }}
+
+                <!-- Student Selection -->
+                <div class="form-section">
+                    <h4><i class="fas fa-user"></i>Select Student</h4>
+                    <div class="form-floating mb-3">
+                        {{ form.student_id(class="form-select", id="studentSelect") }}
+                        <label for="studentSelect">Choose Student</label>
+                    </div>
+                    <div class="selection-preview" id="studentPreview">
+                        <div class="preview-header">
+                            <i class="fas fa-user-circle"></i>
+                            <h5>Student Information</h5>
+                        </div>
+                        <div class="preview-details" id="studentDetails">
+                            <!-- Student details will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book Selection -->
+                <div class="form-section">
+                    <h4><i class="fas fa-book"></i>Select Book</h4>
+                    <div class="form-floating mb-3">
+                        {{ form.book_id(class="form-select", id="bookSelect") }}
+                        <label for="bookSelect">Choose Available Book</label>
+                    </div>
+                    <div class="selection-preview" id="bookPreview">
+                        <div class="preview-header">
+                            <i class="fas fa-book-open"></i>
+                            <h5>Book Information</h5>
+                        </div>
+                        <div class="preview-details" id="bookDetails">
+                            <!-- Book details will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-submit-borrow" id="submitBtn" disabled>
+                    <i class="fas fa-check me-2"></i>Process Borrowing
+                </button>
+            </form>
+
+            <div class="borrowing-summary">
+                <div class="summary-header">
+                    <i class="fas fa-chart-pie"></i>
+                    <h4>Borrowing Summary</h4>
+                </div>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <h5 id="totalBooks">{{ available_books_count }}</h5>
+                        <p>Total Books Available</p>
+                    </div>
+                    <div class="summary-item">
+                        <h5 id="activeBorrowings">{{ active_borrowings }}</h5>
+                        <p>Active Borrowings</p>
+                    </div>
+                    <div class="summary-item">
+                        <h5 id="overdueBooks">{{ overdue_books }}</h5>
+                        <p>Overdue Books</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    const studentSelect = document.getElementById('studentSelect');
+    const bookSelect = document.getElementById('bookSelect');
+    const submitBtn = document.getElementById('submitBtn');
+    const studentPreview = document.getElementById('studentPreview');
+    const bookPreview = document.getElementById('bookPreview');
+
+    function updateSubmitButton() {
+        submitBtn.disabled = !studentSelect.value || !bookSelect.value;
+    }
+
+    studentSelect.addEventListener('change', function() {
+        updateSubmitButton();
+        if (this.value) {
+            studentPreview.classList.add('show');
+
+            document.getElementById('studentDetails').innerHTML = `
+                <div class="detail-item">
+                    <span class="detail-label">Selected:</span>
+                    <span class="detail-value">Student #${this.value}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Current Books:</span>
+                    <span class="detail-value">0 borrowed</span>
+                </div>
+            `;
+        } else {
+            studentPreview.classList.remove('show');
+        }
+    });
+
+    bookSelect.addEventListener('change', function() {
+        updateSubmitButton();
+        if (this.value) {
+            bookPreview.classList.add('show');
+
+            document.getElementById('bookDetails').innerHTML = `
+                <div class="detail-item">
+                    <span class="detail-label">Selected:</span>
+                    <span class="detail-value">Book #${this.value}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Available:</span>
+                    <span class="detail-value">Copies remaining</span>
+                </div>
+            `;
+        } else {
+            bookPreview.classList.remove('show');
+        }
+    });
+
+    updateSubmitButton();
+});
+</script>
+{% endblock %}

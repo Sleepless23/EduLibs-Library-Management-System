@@ -1,0 +1,417 @@
+{% extends "base.html" %}
+
+{% block title %}Search Books - EduLib Library{% endblock %}
+
+{% block content %}
+<style>
+.page-header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    color: white;
+    padding: 40px 0;
+    margin: -20px -15px 40px -15px;
+    border-radius: 0 0 30px 30px;
+    position: relative;
+    overflow: hidden;
+}
+.page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="search-header-pattern" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="0.8" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23search-header-pattern)"/></svg>');
+    pointer-events: none;
+}
+.page-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+.page-header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 0;
+}
+.search-section {
+    background: white;
+    border-radius: 25px;
+    padding: 40px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+    margin-bottom: 40px;
+}
+.search-form {
+    max-width: 600px;
+    margin: 0 auto;
+}
+.search-input-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+.search-input {
+    width: 100%;
+    padding: 15px 60px 15px 20px;
+    border: 3px solid #e2e8f0;
+    border-radius: 15px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+}
+.search-input:focus {
+    border-color: #0f172a;
+    box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.1);
+    background: white;
+    outline: none;
+}
+.search-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: linear-gradient(135deg, #0f172a, #334155);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+.search-btn:hover {
+    background: linear-gradient(135deg, #334155, #0f172a);
+    transform: translateY(-50%) scale(1.05);
+}
+.search-hint {
+    text-align: center;
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-top: 10px;
+}
+.results-section {
+    background: white;
+    border-radius: 25px;
+    padding: 40px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+.results-header h3 {
+    color: #0f172a;
+    font-weight: 700;
+    font-size: 1.8rem;
+    margin-bottom: 0;
+}
+.results-count {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+.book-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+}
+.book-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    position: relative;
+}
+.book-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+.book-cover {
+    height: 200px;
+    background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+.book-cover img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+}
+.book-cover-placeholder {
+    color: #64748b;
+    font-size: 3rem;
+}
+.book-info {
+    padding: 20px;
+}
+.book-title {
+    color: #0f172a;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.book-author {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+.book-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+.book-genre, .book-year {
+    color: #64748b;
+    font-size: 0.8rem;
+    background: #f1f5f9;
+    padding: 4px 8px;
+    border-radius: 8px;
+}
+.book-actions {
+    display: flex;
+    gap: 10px;
+}
+.btn-import {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+.btn-import:hover {
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+.btn-view-details {
+    background: transparent;
+    border: 1px solid #0f172a;
+    color: #0f172a;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+.btn-view-details:hover {
+    background: #0f172a;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+.empty-state i {
+    font-size: 4rem;
+    color: #cbd5e1;
+    margin-bottom: 20px;
+}
+.empty-state h4 {
+    color: #0f172a;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+.empty-state p {
+    color: #64748b;
+    margin-bottom: 25px;
+}
+.search-suggestions {
+    background: #f8fafc;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 30px;
+    border: 1px solid #e2e8f0;
+}
+.suggestions-title {
+    color: #0f172a;
+    font-weight: 600;
+    margin-bottom: 15px;
+    font-size: 1rem;
+}
+.suggestion-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.suggestion-tag {
+    background: white;
+    color: #0f172a;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    text-decoration: none;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+.suggestion-tag:hover {
+    background: #0f172a;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+@media (max-width: 768px) {
+    .book-grid {
+        grid-template-columns: 1fr;
+    }
+    .results-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .book-actions {
+        flex-direction: column;
+    }
+    .btn-import, .btn-view-details {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1><i class="fas fa-search me-3"></i>Search Books</h1>
+                <p>Discover and import books from the Open Library database</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="search-section">
+        <form method="GET" action="{{ url_for('main.search_books') }}" class="search-form">
+            <div class="search-input-group">
+                <input type="text" name="q" value="{{ query }}" placeholder="Search for books by title, author, or ISBN..." class="search-input" required>
+                <button type="submit" class="search-btn">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            <div class="search-hint">
+                <i class="fas fa-lightbulb me-1"></i>
+                Try searching for popular books like "Harry Potter", "Pride and Prejudice", or "The Great Gatsby"
+            </div>
+        </form>
+    </div>
+
+    {% if not query %}
+ 
+    <div class="search-suggestions">
+        <div class="suggestions-title">
+            <i class="fas fa-star me-2"></i>Popular Search Suggestions
+        </div>
+        <div class="suggestion-tags">
+            <a href="{{ url_for('main.search_books', q='Harry Potter') }}" class="suggestion-tag">Harry Potter</a>
+            <a href="{{ url_for('main.search_books', q='Pride and Prejudice') }}" class="suggestion-tag">Pride and Prejudice</a>
+            <a href="{{ url_for('main.search_books', q='The Great Gatsby') }}" class="suggestion-tag">The Great Gatsby</a>
+            <a href="{{ url_for('main.search_books', q='To Kill a Mockingbird') }}" class="suggestion-tag">To Kill a Mockingbird</a>
+            <a href="{{ url_for('main.search_books', q='1984') }}" class="suggestion-tag">1984</a>
+            <a href="{{ url_for('main.search_books', q='The Catcher in the Rye') }}" class="suggestion-tag">The Catcher in the Rye</a>
+            <a href="{{ url_for('main.search_books', q='Lord of the Rings') }}" class="suggestion-tag">Lord of the Rings</a>
+            <a href="{{ url_for('main.search_books', q='The Hobbit') }}" class="suggestion-tag">The Hobbit</a>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if query %}
+    <div class="results-section">
+        <div class="results-header">
+            <h3><i class="fas fa-book me-3"></i>Search Results</h3>
+            <div class="results-count">
+                {% if results %}
+                    Found {{ results|length }} book{{ 's' if results|length != 1 else '' }}
+                {% else %}
+                    No results found
+                {% endif %}
+                {% if query %} for "{{ query }}"{% endif %}
+            </div>
+        </div>
+
+        {% if results %}
+        <div class="book-grid">
+            {% for book in results %}
+            <div class="book-card">
+                <div class="book-cover">
+                    {% if book.cover_url %}
+                        <img src="{{ book.cover_url }}" alt="{{ book.title }} cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div class="book-cover-placeholder" style="display: none;">
+                            <i class="fas fa-book"></i>
+                        </div>
+                    {% else %}
+                        <div class="book-cover-placeholder">
+                            <i class="fas fa-book"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="book-info">
+                    <h5 class="book-title">{{ book.title }}</h5>
+                    <p class="book-author">by {{ book.author }}</p>
+                    <div class="book-details">
+                        <span class="book-genre">{{ book.genre|title }}</span>
+                        <span class="book-year">{{ book.publish_year }}</span>
+                    </div>
+                    <div class="book-actions">
+                        {% if current_user.is_admin %}
+                        <form method="POST" action="{{ url_for('main.import_book', openlibrary_key=book.key) }}" style="display: inline;">
+                            <button type="submit" class="btn-import" onclick="return confirm('Import this book to the library?')">
+                                <i class="fas fa-plus"></i> Import
+                            </button>
+                        </form>
+                        {% endif %}
+                        <a href="https://openlibrary.org{{ book.key }}" target="_blank" class="btn-view-details">
+                            <i class="fas fa-external-link-alt"></i> View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-search"></i>
+            <h4>No Books Found</h4>
+            <p>We couldn't find any books matching your search for "{{ query }}". Try different keywords or check your spelling.</p>
+            <a href="{{ url_for('main.search_books') }}" class="btn btn-primary">
+                <i class="fas fa-arrow-left me-2"></i>Try Another Search
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

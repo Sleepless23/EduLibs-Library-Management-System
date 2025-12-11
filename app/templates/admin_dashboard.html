@@ -1,0 +1,348 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - EduLib Library{% endblock %}
+
+{% block content %}
+<style>
+.admin-header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    color: white;
+    padding: 50px 0;
+    margin: -20px -15px 50px -15px;
+    border-radius: 0 0 30px 30px;
+    position: relative;
+    overflow: hidden;
+}
+.admin-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="admin-header-pattern" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="0.8" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23admin-header-pattern)"/></svg>');
+    pointer-events: none;
+}
+.admin-header h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+.admin-header p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-bottom: 0;
+}
+.admin-badge {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.3);
+}
+.stats-grid {
+    margin-bottom: 50px;
+}
+.stats-card {
+    background: white;
+    border-radius: 20px;
+    padding: 20px 15px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+.stats-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+.stats-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+}
+.stats-card .icon-wrapper {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 25px;
+    font-size: 2.5rem;
+    position: relative;
+}
+.stats-card .icon-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(29, 78, 216, 0.2));
+    z-index: -1;
+}
+.stats-card:nth-child(1) .icon-wrapper {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+}
+.stats-card:nth-child(2) .icon-wrapper {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+.stats-card:nth-child(3) .icon-wrapper {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+}
+.stats-card:nth-child(4) .icon-wrapper {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+}
+.stats-card h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 3px;
+}
+.stats-card p {
+    color: #64748b;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+.quick-actions-section {
+    background: white;
+    border-radius: 25px;
+    padding: 40px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+    margin-bottom: 50px;
+}
+.quick-actions-section h3 {
+    color: #0f172a;
+    font-weight: 700;
+    margin-bottom: 30px;
+    font-size: 1.8rem;
+}
+.action-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+.action-btn {
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    border: 2px solid #e2e8f0;
+    color: #0f172a;
+    padding: 20px 25px;
+    border-radius: 15px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    font-size: 1rem;
+}
+.action-btn:hover {
+    background: linear-gradient(135deg, #0f172a, #334155);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.3);
+    border-color: #0f172a;
+}
+.action-btn i {
+    font-size: 1.5rem;
+    margin-right: 15px;
+    width: 30px;
+    text-align: center;
+}
+.recent-activity-section {
+    background: white;
+    border-radius: 25px;
+    padding: 40px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+.recent-activity-section h3 {
+    color: #0f172a;
+    font-weight: 700;
+    margin-bottom: 30px;
+    font-size: 1.8rem;
+}
+.activity-item {
+    background: #f8fafc;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 15px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+.activity-item:hover {
+    background: #f1f5f9;
+    transform: translateX(5px);
+}
+.activity-item h6 {
+    color: #0f172a;
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 1rem;
+}
+.activity-item p {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+.activity-item small {
+    color: #94a3b8;
+    font-weight: 500;
+}
+.activity-status {
+    float: right;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+.activity-status.active {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    color: #92400e;
+}
+.activity-status.returned {
+    background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+    color: #166534;
+}
+.no-activity {
+    text-align: center;
+    padding: 60px 20px;
+    color: #64748b;
+}
+.no-activity i {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+</style>
+
+<!-- Admin Header -->
+<div class="admin-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1><i class="fas fa-crown me-3"></i>Admin Dashboard</h1>
+                <p>Welcome back, {{ current_user.full_name }}</p>
+            </div>
+            <div class="col-lg-4 text-center">
+                <span class="admin-badge">
+                    <i class="fas fa-shield-alt me-2"></i>Administrator
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Statistics Grid -->
+    <div class="stats-grid">
+        <div class="row justify-content-center">
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h2>{{ total_books }}</h2>
+                    <p>Total Books</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h2>{{ available_books_count }}</h2>
+                    <p>Available Books</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h2>{{ total_students }}</h2>
+                    <p>Total Students</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions Section -->
+    <div class="quick-actions-section">
+        <h3><i class="fas fa-bolt me-3"></i>Quick Actions</h3>
+        <div class="action-buttons">
+            <a href="{{ url_for('main.add_book') }}" class="action-btn">
+                <i class="fas fa-plus-circle"></i>
+                <span>Add New Book</span>
+            </a>
+            <a href="{{ url_for('main.add_student') }}" class="action-btn">
+                <i class="fas fa-user-plus"></i>
+                <span>Add New Student</span>
+            </a>
+            <a href="{{ url_for('main.borrow') }}" class="action-btn">
+                <i class="fas fa-handshake"></i>
+                <span>Process Borrowing</span>
+            </a>
+            <a href="{{ url_for('main.books') }}" class="action-btn">
+                <i class="fas fa-list"></i>
+                <span>Manage Books</span>
+            </a>
+            <a href="{{ url_for('main.students') }}" class="action-btn">
+                <i class="fas fa-users-cog"></i>
+                <span>Manage Students</span>
+            </a>
+            <a href="{{ url_for('main.reports') }}" class="action-btn">
+                <i class="fas fa-chart-bar"></i>
+                <span>View Reports</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="recent-activity-section">
+        <h3><i class="fas fa-clock me-3"></i>Recent Activity</h3>
+        {% if recent_borrowings %}
+            {% for borrowing in recent_borrowings[:8] %}
+                <div class="activity-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h6>{{ borrowing.book.title }}</h6>
+                            <p>Borrowed by {{ borrowing.student.full_name }}</p>
+                            <small>{{ borrowing.borrow_date.strftime('%B %d, %Y at %I:%M %p') }}</small>
+                        </div>
+                        <span class="activity-status {{ 'active' if borrowing.status == 'borrowed' else 'returned' }}">
+                            {% if borrowing.status == 'borrowed' %}
+                                <i class="fas fa-clock me-1"></i>Active
+                            {% else %}
+                                <i class="fas fa-check me-1"></i>Returned
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-activity">
+                <i class="fas fa-inbox"></i>
+                <h5>No Recent Activity</h5>
+                <p>Recent borrowing activities will appear here.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

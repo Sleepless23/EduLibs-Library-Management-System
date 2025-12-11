@@ -1,0 +1,381 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Book - EduLib Library{% endblock %}
+
+{% block content %}
+<style>
+.page-header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    color: white;
+    padding: 40px 0;
+    margin: -20px -15px 40px -15px;
+    border-radius: 0 0 30px 30px;
+    position: relative;
+    overflow: hidden;
+}
+.page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="edit-book-header-pattern" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="0.8" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23edit-book-header-pattern)"/></svg>');
+    pointer-events: none;
+}
+.page-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+.page-header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 0;
+}
+.edit-form-section {
+    background: white;
+    border-radius: 25px;
+    padding: 40px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+    margin-bottom: 40px;
+}
+.form-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+.form-header h2 {
+    color: #0f172a;
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+.form-header p {
+    color: #64748b;
+    font-size: 1rem;
+}
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+.form-group {
+    margin-bottom: 25px;
+}
+.form-floating > label {
+    color: #64748b;
+    font-weight: 500;
+    padding: 8px 16px;
+}
+.form-control, .form-select {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px 20px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+}
+.form-control:focus, .form-select:focus {
+    border-color: #0f172a;
+    box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1);
+    background: white;
+}
+.form-control:invalid, .form-select:invalid {
+    border-color: #ef4444;
+}
+.book-preview {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 20px;
+    padding: 30px;
+    border: 1px solid #e2e8f0;
+}
+.preview-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.preview-header i {
+    color: #0f172a;
+    margin-right: 10px;
+    font-size: 1.2rem;
+}
+.preview-header h4 {
+    color: #0f172a;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+.preview-book {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+.book-cover-preview {
+    width: 80px;
+    height: 110px;
+    background: linear-gradient(135deg, #8b5cf6, #a855f7);
+    border-radius: 6px 12px 12px 6px;
+    margin: 0 auto 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    position: relative;
+}
+.book-cover-preview::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 8px;
+    right: 8px;
+    height: 2px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 1px;
+}
+.book-details-preview h5 {
+    color: #0f172a;
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-align: center;
+}
+.book-details-preview p {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+    text-align: center;
+}
+.book-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+}
+.stat-item {
+    text-align: center;
+}
+.stat-item h6 {
+    color: #0f172a;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 2px;
+}
+.stat-item span {
+    color: #64748b;
+    font-size: 0.8rem;
+}
+.form-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+}
+.btn-update-book {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border: none;
+    color: white;
+    padding: 15px 40px;
+    border-radius: 15px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.btn-update-book:hover {
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+}
+.btn-cancel {
+    background: transparent;
+    border: 2px solid #64748b;
+    color: #64748b;
+    padding: 15px 40px;
+    border-radius: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.btn-cancel:hover {
+    background: #64748b;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+}
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    .form-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    .btn-update-book, .btn-cancel {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+</style>
+
+
+<div class="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1><i class="fas fa-edit me-3"></i>Edit Book</h1>
+                <p>Update book information and manage inventory</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+
+        <div class="col-lg-8">
+            <div class="edit-form-section">
+                <div class="form-header">
+                    <h2><i class="fas fa-book me-2"></i>Book Information</h2>
+                    <p>Modify the book details below</p>
+                </div>
+
+                <form method="POST" id="editBookForm">
+                    {{ form.hidden_tag() }}
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <div class="form-floating">
+                                {{ form.isbn(class="form-control", placeholder="ISBN") }}
+                                <label for="isbn">ISBN</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-floating">
+                                {{ form.title(class="form-control", placeholder="Book Title") }}
+                                <label for="title">Book Title</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-floating">
+                                {{ form.author(class="form-control", placeholder="Author Name") }}
+                                <label for="author">Author</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-floating">
+                                {{ form.genre(class="form-select", placeholder="Genre") }}
+                                <label for="genre">Genre</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-floating">
+                                {{ form.quantity(class="form-control", placeholder="Total Quantity", type="number", min="1") }}
+                                <label for="quantity">Total Quantity</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="stat-display">
+                                <label class="form-label fw-bold">Available Quantity</label>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Available quantity will be calculated automatically based on current borrowings.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-update-book">
+                            <i class="fas fa-save"></i>
+                            Update Book
+                        </button>
+                        <a href="{{ url_for('main.books') }}" class="btn-cancel">
+                            <i class="fas fa-times"></i>
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="book-preview">
+                <div class="preview-header">
+                    <i class="fas fa-eye"></i>
+                    <h4>Book Preview</h4>
+                </div>
+
+                <div class="preview-book">
+                    <div class="book-cover-preview"></div>
+                    <div class="book-details-preview">
+                        <h5 id="preview-title">{{ form.title.data or 'Book Title' }}</h5>
+                        <p id="preview-author">by {{ form.author.data or 'Author Name' }}</p>
+                        <p id="preview-genre">{{ form.genre.data or 'Genre' }}</p>
+                        <p id="preview-isbn">ISBN: {{ form.isbn.data or 'ISBN Number' }}</p>
+                    </div>
+
+                    <div class="book-stats">
+                        <div class="stat-item">
+                            <h6 id="preview-quantity">{{ form.quantity.data or '0' }}</h6>
+                            <span>Total</span>
+                        </div>
+                        <div class="stat-item">
+                            <h6 id="preview-available">{{ form.quantity.data or '0' }}</h6>
+                            <span>Available</span>
+                        </div>
+                        <div class="stat-item">
+                            <h6>0</h6>
+                            <span>Borrowed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    const titleInput = document.querySelector('#title');
+    const authorInput = document.querySelector('#author');
+    const genreSelect = document.querySelector('#genre');
+    const isbnInput = document.querySelector('#isbn');
+    const quantityInput = document.querySelector('#quantity');
+
+    function updatePreview() {
+        document.getElementById('preview-title').textContent = titleInput?.value || 'Book Title';
+        document.getElementById('preview-author').textContent = 'by ' + (authorInput?.value || 'Author Name');
+        document.getElementById('preview-genre').textContent = genreSelect?.value || 'Genre';
+        document.getElementById('preview-isbn').textContent = 'ISBN: ' + (isbnInput?.value || 'ISBN Number');
+
+        const quantity = parseInt(quantityInput?.value) || 0;
+        document.getElementById('preview-quantity').textContent = quantity;
+        document.getElementById('preview-available').textContent = quantity; // Simplified - in real app this would be calculated
+    }
+
+    [titleInput, authorInput, genreSelect, isbnInput, quantityInput].forEach(input => {
+        if (input) {
+            input.addEventListener('input', updatePreview);
+            input.addEventListener('change', updatePreview);
+        }
+    });
+    updatePreview();
+});
+</script>
+{% endblock %}

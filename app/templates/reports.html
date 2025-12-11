@@ -1,0 +1,540 @@
+{% extends "base.html" %}
+
+{% block title %}Reports & Analytics - EduLib Library{% endblock %}
+
+{% block content %}
+<style>
+.page-header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    color: white;
+    padding: 40px 0;
+    margin: -20px -15px 40px -15px;
+    border-radius: 0 0 30px 30px;
+    position: relative;
+    overflow: hidden;
+}
+.page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="reports-header-pattern" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="0.8" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23reports-header-pattern)"/></svg>');
+    pointer-events: none;
+}
+.page-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+.page-header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 0;
+}
+.stats-section {
+    margin-bottom: 40px;
+}
+.stats-card {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+.stats-card .icon-wrapper {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    font-size: 2rem;
+}
+.stats-card:nth-child(1) .icon-wrapper {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+}
+.stats-card:nth-child(2) .icon-wrapper {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+}
+.stats-card:nth-child(3) .icon-wrapper {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+.stats-card:nth-child(4) .icon-wrapper {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+}
+.stats-card h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 5px;
+}
+.stats-card p {
+    color: #64748b;
+    font-weight: 500;
+    margin-bottom: 0;
+}
+.report-section {
+    background: white;
+    border-radius: 25px;
+    padding: 40px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+    margin-bottom: 40px;
+}
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.section-header h3 {
+    color: #0f172a;
+    font-weight: 700;
+    font-size: 1.8rem;
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+}
+.section-header h3 i {
+    margin-right: 15px;
+    color: #0f172a;
+}
+.btn-export {
+    background: linear-gradient(135deg, #0f172a, #334155);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.btn-export:hover {
+    background: linear-gradient(135deg, #334155, #0f172a);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(15, 23, 42, 0.3);
+}
+.popular-books-container {
+    background: #f8fafc;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+.popular-books-table {
+    margin-bottom: 0;
+    background: transparent;
+}
+.popular-books-table thead th {
+    background: linear-gradient(135deg, #0f172a, #334155);
+    color: white;
+    border: none;
+    padding: 18px 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.popular-books-table tbody td {
+    padding: 18px 20px;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: middle;
+}
+.popular-books-table tbody tr:hover {
+    background: #f1f5f9;
+}
+.popular-books-table tbody tr:last-child td {
+    border-bottom: none;
+}
+.rank-badge {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-right: 15px;
+}
+.rank-1 { background: linear-gradient(135deg, #ffd700, #ffb347); color: #8b4513; }
+.rank-2 { background: linear-gradient(135deg, #c0c0c0, #a8a8a8); color: #2f4f4f; }
+.rank-3 { background: linear-gradient(135deg, #cd7f32, #a0522d); color: white; }
+.rank-other { background: linear-gradient(135deg, #e2e8f0, #cbd5e1); color: #64748b; }
+.book-info {
+    display: flex;
+    align-items: center;
+}
+.book-details h5 {
+    color: #0f172a;
+    font-weight: 600;
+    margin-bottom: 2px;
+    font-size: 1rem;
+}
+.book-details small {
+    color: #64748b;
+}
+.borrow-count {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 1.1rem;
+}
+.overdue-section {
+    background: #fef2f2;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 25px;
+    border: 1px solid #fecaca;
+}
+.overdue-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.overdue-header i {
+    color: #dc2626;
+    margin-right: 10px;
+    font-size: 1.2rem;
+}
+.overdue-header h5 {
+    color: #dc2626;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+.overdue-item {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+    border: 1px solid #fecaca;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.overdue-student {
+    font-weight: 600;
+    color: #0f172a;
+}
+.overdue-book {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+.overdue-date {
+    color: #dc2626;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+.school-stats-container {
+    background: #f8fafc;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+.school-stats-table {
+    margin-bottom: 0;
+    background: transparent;
+}
+.school-stats-table thead th {
+    background: linear-gradient(135deg, #0f172a, #334155);
+    color: white;
+    border: none;
+    padding: 18px 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.school-stats-table tbody td {
+    padding: 18px 20px;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: middle;
+}
+.school-stats-table tbody tr:hover {
+    background: #f1f5f9;
+}
+.school-stats-table tbody tr:last-child td {
+    border-bottom: none;
+}
+.school-name {
+    font-weight: 600;
+    color: #0f172a;
+}
+.school-count {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 1.1rem;
+}
+.simple-chart {
+    height: 20px;
+    background: #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+.chart-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #0f172a, #334155);
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #64748b;
+}
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+@media (max-width: 768px) {
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    .book-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .overdue-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .popular-books-container, .school-stats-container {
+        overflow-x: auto;
+    }
+    .popular-books-table, .school-stats-table {
+        min-width: 500px;
+    }
+}
+</style>
+
+<div class="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1><i class="fas fa-chart-bar me-3"></i>Reports & Analytics</h1>
+                <p>Comprehensive insights into library usage and performance</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="stats-section">
+        <div class="row">
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h3>{{ most_borrowed|length if most_borrowed else 0 }}</h3>
+                    <p>Books Tracked</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h3>{{ overdue|length if overdue else 0 }}</h3>
+                    <p>Overdue Books</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-school"></i>
+                    </div>
+                    <h3>{{ books_per_school|length if books_per_school else 0 }}</h3>
+                    <p>Schools Served</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>{% set total_borrows = 0 %}{% for school, count in books_per_school %}{% set total_borrows = total_borrows + count %}{% endfor %}{{ total_borrows }}</h3>
+                    <p>Total Borrows</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="report-section">
+        <div class="section-header">
+            <h3><i class="fas fa-trophy"></i>Most Borrowed Books</h3>
+            <a href="{{ url_for('main.export_popular_books_csv') }}" class="btn-export">
+                <i class="fas fa-download"></i>Export CSV
+            </a>
+        </div>
+
+        {% if most_borrowed %}
+        <div class="popular-books-container">
+            <table class="table popular-books-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Book Details</th>
+                        <th>Borrow Count</th>
+                        <th>Popularity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for title, count in most_borrowed %}
+                    {% set rank = loop.index %}
+                    <tr>
+                        <td>
+                            <div class="rank-badge rank-{{ '1' if rank == 1 else '2' if rank == 2 else '3' if rank == 3 else 'other' }}">
+                                {{ rank }}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="book-info">
+                                <div class="book-details">
+                                    <h5>{{ title }}</h5>
+                                    <small>Popular Library Book</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="borrow-count">{{ count }}</span>
+                        </td>
+                        <td>
+                            {% set max_count = most_borrowed[0][1] if most_borrowed else 1 %}
+                            {% set percentage = (count / max_count * 100)|round %}
+                            <div class="simple-chart">
+                                <div class="chart-bar" data-width="{{ percentage }}"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-book-open"></i>
+            <h5>No Borrowing Data Available</h5>
+            <p>Borrowing statistics will appear here once students start borrowing books.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="report-section">
+        <div class="section-header">
+            <h3><i class="fas fa-exclamation-triangle"></i>Overdue Books Alert</h3>
+            <span class="badge bg-danger">{{ overdue|length if overdue else 0 }} overdue</span>
+        </div>
+
+        {% if overdue %}
+        <div class="overdue-section">
+            <div class="overdue-header">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h5>Books Past Due Date</h5>
+            </div>
+            {% for borrowing in overdue %}
+            <div class="overdue-item">
+                <div>
+                    <div class="overdue-student">{{ borrowing.student.full_name }}</div>
+                    <div class="overdue-book">{{ borrowing.book.title }}</div>
+                </div>
+                <div class="overdue-date">
+                    Due: {{ borrowing.due_date.strftime('%b %d, %Y') }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-check-circle"></i>
+            <h5>No Overdue Books</h5>
+            <p>All books are currently on time. Great job!</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="report-section">
+        <div class="section-header">
+            <h3><i class="fas fa-school"></i>School-wise Statistics</h3>
+            <a href="{{ url_for('main.export_school_books_csv') }}" class="btn-export">
+                <i class="fas fa-download"></i>Export CSV
+            </a>
+        </div>
+
+        {% if books_per_school %}
+        <div class="school-stats-container">
+            <table class="table school-stats-table">
+                <thead>
+                    <tr>
+                        <th>School Name</th>
+                        <th>Total Borrows</th>
+                        <th>Activity Level</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for school, count in books_per_school %}
+                    <tr>
+                        <td>
+                            <span class="school-name">{{ school }}</span>
+                        </td>
+                        <td>
+                            <span class="school-count">{{ count }}</span>
+                        </td>
+                        <td>
+                            {% set max_count = books_per_school[0][1] if books_per_school else 1 %}
+                            {% set percentage = (count / max_count * 100)|round %}
+                            <div class="simple-chart">
+                                <div class="chart-bar" data-width="{{ percentage }}"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-school"></i>
+            <h5>No School Data Available</h5>
+            <p>School statistics will appear here once borrowing activity begins.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chartBars = document.querySelectorAll('.chart-bar[data-width]');
+    chartBars.forEach(bar => {
+        const width = bar.getAttribute('data-width');
+        bar.style.width = width + '%';
+    });
+});
+</script>
+{% endblock %}
