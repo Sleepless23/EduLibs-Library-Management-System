@@ -51,10 +51,6 @@ def populate_db():
             if not existing:
                 book.available_quantity = book.quantity
                 db.session.add(book)
-            else:
-                # Reset available quantity for existing books
-                existing.available_quantity = existing.quantity
-                db.session.add(existing)
         students = [
             Student(email='admin@edulib.com', full_name='Admin User', class_name='N/A', school='EduLib', contact='admin@edulib.com', is_admin=True),
         ]
